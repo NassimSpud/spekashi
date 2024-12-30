@@ -49,13 +49,19 @@ const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
             </button>
           </div>
 
-          {/* Center Link */}
-          <div className="text-center">
+          {/* Center Links */}
+          <div className="flex space-x-6">
             <Link
               to="/trading"
               className="text-lg font-semibold hover:text-red-500 transition duration-200"
             >
               Trading
+            </Link>
+            <Link
+              to="/bot"
+              className="text-lg font-semibold hover:text-red-500 transition duration-200"
+            >
+              Bot
             </Link>
           </div>
 
