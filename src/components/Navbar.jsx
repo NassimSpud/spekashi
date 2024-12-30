@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FaTelegram } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Profiledropdown from "./Profiledropdown";
 
-const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
+const Navbar = () => {
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [token, setToken] = useState(null);
   const app_id = "66854";
 
   useEffect(() => {
@@ -15,8 +17,14 @@ const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
       setLoggedIn(true);
       localStorage.setItem("token", oauthToken);
       window.history.replaceState({}, document.title, "/");
+    } else {
+      const storedToken = localStorage.getItem("token");
+      if (storedToken) {
+        setToken(storedToken);
+        setLoggedIn(true);
+      }
     }
-  }, [setToken, setLoggedIn]);
+  }, []);
 
   const handleLogin = () => {
     const redirectUri = encodeURIComponent(window.location.href);
@@ -68,7 +76,7 @@ const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
           {/* Login/Profile Section */}
           <div>
             {isLoggedIn ? (
-              <Profiledropdown onLogout={handleLogout} />
+              <Profiledropdown token={token} onLogout={handleLogout} />
             ) : (
               <button
                 onClick={handleLogin}
