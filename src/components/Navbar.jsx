@@ -1,17 +1,19 @@
 import React, { useEffect } from "react";
 import { FaTelegram } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import Profiledropdown from "./Profiledropdown";
 
 const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
-  const app_id = "66854"; // Replace with your Deriv app_id
+  const app_id = "66854";
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const oauthToken = urlParams.get("token");
+    const oauthToken = urlParams.get("token1");
 
     if (oauthToken) {
       setToken(oauthToken);
       setLoggedIn(true);
+      localStorage.setItem("token", oauthToken);
       window.history.replaceState({}, document.title, "/");
     }
   }, [setToken, setLoggedIn]);
@@ -24,6 +26,7 @@ const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
   const handleLogout = () => {
     setLoggedIn(false);
     setToken(null);
+    localStorage.removeItem("token");
   };
 
   return (
@@ -32,9 +35,9 @@ const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Telegram */}
           <div className="flex items-center">
-            <a href="/" className="text-2xl font-bold text-red-500">
+            <Link to="/" className="text-2xl font-bold text-red-500">
               Spekashi
-            </a>
+            </Link>
             <button
               className="ml-4 flex items-center px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 text-white transition duration-200"
               onClick={() =>
@@ -42,17 +45,18 @@ const Navbar = ({ isLoggedIn, setLoggedIn, token, setToken }) => {
               }
             >
               <FaTelegram className="mr-2" />
+              Telegram
             </button>
           </div>
 
           {/* Center Link */}
           <div className="text-center">
-            <a
-              href="/trading"
+            <Link
+              to="/trading"
               className="text-lg font-semibold hover:text-red-500 transition duration-200"
             >
               Trading
-            </a>
+            </Link>
           </div>
 
           {/* Login/Profile Section */}
