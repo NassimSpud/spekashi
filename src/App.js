@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Navbar from "./components/Navbar";
+import LandingPage from "./components/landing";
 
 const App = () => {
   const [isLoggedIn, setLoggedIn] = useState(false);
@@ -13,6 +14,7 @@ const App = () => {
         token={token}
         setToken={setToken}
       />
+      <LandingPage />
     </div>
   );
 };
