@@ -23,12 +23,29 @@ const Profiledropdown = ({ token, onLogout }) => {
       const data = JSON.parse(event.data);
 
       if (data.msg_type === "authorize") {
+        // Fetch account balances for real and demo accounts
+        const realAccount = data.account_list.find(
+          (account) => !account.is_virtual
+        );
+        const demoAccount = data.account_list.find(
+          (account) => account.is_virtual
+        );
+
+        setRealBalance(realAccount?.balance || 0);
+        setDemoBalance(demoAccount?.balance || 0);
+
+        // Request balances
         socket.send(JSON.stringify({ balance: 1, account: "all" }));
       }
 
       if (data.msg_type === "balance") {
-        setRealBalance(data.balance.accounts.real || 0);
-        setDemoBalance(data.balance.accounts.demo || 0);
+        // Update specific account balances
+        if (data.balance.accounts.real) {
+          setRealBalance(data.balance.accounts.real);
+        }
+        if (data.balance.accounts.demo) {
+          setDemoBalance(data.balance.accounts.demo);
+        }
       }
     };
 
