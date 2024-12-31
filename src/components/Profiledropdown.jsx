@@ -4,7 +4,7 @@ import { FaUserCircle } from "react-icons/fa";
 const Profiledropdown = ({ token, onLogout }) => {
   const [accountType, setAccountType] = useState("Real");
   const [balances, setBalances] = useState({ real: 0, demo: 0 });
-  const [exchangeRate, setExchangeRate] = useState(140); // Example fixed exchange rate USD to KSH
+  const [exchangeRate, setExchangeRate] = useState(140); // Fixed USD to KSH rate
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("");
 
@@ -24,7 +24,6 @@ const Profiledropdown = ({ token, onLogout }) => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      // Handle the authorization response
       if (data.msg_type === "authorize") {
         const userFullName = data.authorize.fullname || "User";
         setUserName(userFullName);
@@ -33,7 +32,6 @@ const Profiledropdown = ({ token, onLogout }) => {
         socket.send(JSON.stringify({ balance: 1, account: "all" }));
       }
 
-      // Handle the balance response
       if (data.msg_type === "balance") {
         const accounts = data.balance.accounts;
         setBalances({
