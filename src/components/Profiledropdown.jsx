@@ -4,6 +4,7 @@ import { FaUserCircle } from "react-icons/fa";
 const Profiledropdown = ({ token, onLogout }) => {
   const [accountType, setAccountType] = useState("Real");
   const [balances, setBalances] = useState({ real: 0, demo: 0 });
+  const [exchangeRate, setExchangeRate] = useState(140); // Example fixed exchange rate USD to KSH
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState("");
 
@@ -36,8 +37,8 @@ const Profiledropdown = ({ token, onLogout }) => {
       if (data.msg_type === "balance") {
         const accounts = data.balance.accounts;
         setBalances({
-          real: accounts.real || 0,
-          demo: accounts.demo || 0,
+          real: (accounts.real || 0) * exchangeRate,
+          demo: (accounts.demo || 0) * exchangeRate,
         });
       }
     };
@@ -45,7 +46,7 @@ const Profiledropdown = ({ token, onLogout }) => {
     socket.onclose = () => console.log("WebSocket disconnected.");
 
     return () => socket.close();
-  }, [token]);
+  }, [token, exchangeRate]);
 
   return (
     <div className="relative">
@@ -62,7 +63,9 @@ const Profiledropdown = ({ token, onLogout }) => {
             <p className="font-semibold">Welcome, {userName}</p>
             <p className="mt-2">
               {accountType} Balance: KSH{" "}
-              {accountType === "Real" ? balances.real : balances.demo}
+              {accountType === "Real"
+                ? balances.real.toFixed(2)
+                : balances.demo.toFixed(2)}
             </p>
             <button
               className="w-full mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
