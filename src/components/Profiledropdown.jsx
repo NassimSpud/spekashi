@@ -3,9 +3,9 @@ import { FaUserCircle } from "react-icons/fa";
 
 const Profiledropdown = ({ token, onLogout }) => {
   const [accountType, setAccountType] = useState("Real");
-  const [realBalance, setRealBalance] = useState(0);
-  const [demoBalance, setDemoBalance] = useState(0);
+  const [balances, setBalances] = useState({ real: 0, demo: 0 });
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     if (!token) return;
@@ -16,36 +16,29 @@ const Profiledropdown = ({ token, onLogout }) => {
     );
 
     socket.onopen = () => {
+      // Authorize the user
       socket.send(JSON.stringify({ authorize: token }));
     };
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
+      // Handle the authorization response
       if (data.msg_type === "authorize") {
-        // Fetch account balances for real and demo accounts
-        const realAccount = data.account_list.find(
-          (account) => !account.is_virtual
-        );
-        const demoAccount = data.account_list.find(
-          (account) => account.is_virtual
-        );
+        const userFullName = data.authorize.fullname || "User";
+        setUserName(userFullName);
 
-        setRealBalance(realAccount?.balance || 0);
-        setDemoBalance(demoAccount?.balance || 0);
-
-        // Request balances
+        // Fetch balances for all accounts
         socket.send(JSON.stringify({ balance: 1, account: "all" }));
       }
 
+      // Handle the balance response
       if (data.msg_type === "balance") {
-        // Update specific account balances
-        if (data.balance.accounts.real) {
-          setRealBalance(data.balance.accounts.real);
-        }
-        if (data.balance.accounts.demo) {
-          setDemoBalance(data.balance.accounts.demo);
-        }
+        const accounts = data.balance.accounts;
+        setBalances({
+          real: accounts.real || 0,
+          demo: accounts.demo || 0,
+        });
       }
     };
 
@@ -57,7 +50,7 @@ const Profiledropdown = ({ token, onLogout }) => {
   return (
     <div className="relative">
       <button
-        className="flex items-center space-x-2"
+        className="flex items-center space-x-2 text-white"
         onClick={() => setDropdownOpen(!dropdownOpen)}
       >
         <FaUserCircle className="text-xl" />
@@ -66,9 +59,10 @@ const Profiledropdown = ({ token, onLogout }) => {
       {dropdownOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white text-gray-900 rounded-md shadow-lg">
           <div className="p-4">
-            <p className="font-semibold">
+            <p className="font-semibold">Welcome, {userName}</p>
+            <p className="mt-2">
               {accountType} Balance: KSH{" "}
-              {accountType === "Real" ? realBalance : demoBalance}
+              {accountType === "Real" ? balances.real : balances.demo}
             </p>
             <button
               className="w-full mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
